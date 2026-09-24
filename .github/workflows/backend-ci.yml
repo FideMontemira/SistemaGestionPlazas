@@ -50,16 +50,16 @@ jobs:
         run: >
           dotnet test -c Release --no-build
           --project tests/Sgpla.ArchitectureTests
-          --report-trx --results-directory ${{ github.workspace }}/TestResults
+          --report-xunit-trx --results-directory ${{ github.workspace }}/TestResults
           && dotnet test -c Release --no-build
           --project tests/Sgpla.UnitTests
-          --report-trx --results-directory ${{ github.workspace }}/TestResults
+          --report-xunit-trx --results-directory ${{ github.workspace }}/TestResults
 
       - name: Pruebas de integración (SQL Server en contenedor)
         run: >
           dotnet test -c Release --no-build
           --project tests/Sgpla.IntegrationTests
-          --report-trx --results-directory ${{ github.workspace }}/TestResults
+          --report-xunit-trx --results-directory ${{ github.workspace }}/TestResults
 
       - name: Publicar resultados
         if: always()
