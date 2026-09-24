@@ -1,0 +1,70 @@
+name: backend-ci
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "sgpla-backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "sgpla-backend/**"
+      - ".github/workflows/backend-ci.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build y pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: sgpla-backend
+
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: sgpla-backend/global.json
+
+      - name: Restore
+        run: dotnet restore Sgpla.slnx
+
+      - name: Build
+        run: dotnet build Sgpla.slnx -c Release --no-restore
+
+      - name: Formato
+        run: dotnet format Sgpla.slnx --verify-no-changes --no-restore
+
+      - name: Pruebas de arquitectura y unitarias
+        run: >
+          dotnet test -c Release --no-build
+          --project tests/Sgpla.ArchitectureTests
+          --report-trx --results-directory ${{ github.workspace }}/TestResults
+          && dotnet test -c Release --no-build
+          --project tests/Sgpla.UnitTests
+          --report-trx --results-directory ${{ github.workspace }}/TestResults
+
+      - name: Pruebas de integración (SQL Server en contenedor)
+        run: >
+          dotnet test -c Release --no-build
+          --project tests/Sgpla.IntegrationTests
+          --report-trx --results-directory ${{ github.workspace }}/TestResults
+
+      - name: Publicar resultados
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-pruebas-backend
+          path: TestResults/**/*.trx
+          if-no-files-found: ignore

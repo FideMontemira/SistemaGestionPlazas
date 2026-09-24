@@ -1,0 +1,46 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Sgpla.Api/Sgpla.Api.csproj" />
+    <Project Path="src/Sgpla.Database/Sgpla.Database.csproj" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Sgpla.BuildingBlocks.Infrastructure/Sgpla.BuildingBlocks.Infrastructure.csproj" />
+    <Project Path="src/BuildingBlocks/Sgpla.SharedKernel/Sgpla.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Aspirantes/">
+    <Project Path="src/Modules/Aspirantes/Sgpla.Modules.Aspirantes/Sgpla.Modules.Aspirantes.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Catalogos/">
+    <Project Path="src/Modules/Catalogos/Sgpla.Modules.Catalogos/Sgpla.Modules.Catalogos.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/ConsejoTecnico/">
+    <Project Path="src/Modules/ConsejoTecnico/Sgpla.Modules.ConsejoTecnico/Sgpla.Modules.ConsejoTecnico.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Docentes/">
+    <Project Path="src/Modules/Docentes/Sgpla.Modules.Docentes/Sgpla.Modules.Docentes.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Institucional/">
+    <Project Path="src/Modules/Institucional/Sgpla.Modules.Institucional/Sgpla.Modules.Institucional.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Integracion/">
+    <Project Path="src/Modules/Integracion/Sgpla.Modules.Integracion/Sgpla.Modules.Integracion.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/OfertaEducativa/">
+    <Project Path="src/Modules/OfertaEducativa/Sgpla.Modules.OfertaEducativa/Sgpla.Modules.OfertaEducativa.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Publicacion/">
+    <Project Path="src/Modules/Publicacion/Sgpla.Modules.Publicacion/Sgpla.Modules.Publicacion.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/SolicitudesApertura/">
+    <Project Path="src/Modules/SolicitudesApertura/Sgpla.Modules.SolicitudesApertura/Sgpla.Modules.SolicitudesApertura.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Usuarios/">
+    <Project Path="src/Modules/Usuarios/Sgpla.Modules.Usuarios/Sgpla.Modules.Usuarios.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Sgpla.ArchitectureTests/Sgpla.ArchitectureTests.csproj" />
+    <Project Path="tests/Sgpla.IntegrationTests/Sgpla.IntegrationTests.csproj" />
+    <Project Path="tests/Sgpla.UnitTests/Sgpla.UnitTests.csproj" />
+  </Folder>
+</Solution>

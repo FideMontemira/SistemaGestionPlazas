@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Sgpla.Modules.Integracion</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Sgpla.SharedKernel\Sgpla.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Sgpla.BuildingBlocks.Infrastructure\Sgpla.BuildingBlocks.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <!-- Dependencias entre módulos (ver PLAN_INICIAL.md, grafo de dependencias) -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\OfertaEducativa\Sgpla.Modules.OfertaEducativa\Sgpla.Modules.OfertaEducativa.csproj" />
+    <ProjectReference Include="..\..\Docentes\Sgpla.Modules.Docentes\Sgpla.Modules.Docentes.csproj" />
+  </ItemGroup>
+
+</Project>

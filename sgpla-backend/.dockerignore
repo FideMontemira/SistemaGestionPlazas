@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/TestResults/
+**/*.user
+**/.vs/
+**/.vscode/
+**/.idea/
+**/Dockerfile*
+**/.dockerignore
+**/appsettings.*.local.json
+tests/
+README.md

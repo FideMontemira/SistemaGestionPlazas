@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Sgpla.Modules.ConsejoTecnico</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Sgpla.SharedKernel\Sgpla.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Sgpla.BuildingBlocks.Infrastructure\Sgpla.BuildingBlocks.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <!-- Dependencias entre módulos (ver PLAN_INICIAL.md, grafo de dependencias) -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Publicacion\Sgpla.Modules.Publicacion\Sgpla.Modules.Publicacion.csproj" />
+    <ProjectReference Include="..\..\Aspirantes\Sgpla.Modules.Aspirantes\Sgpla.Modules.Aspirantes.csproj" />
+    <ProjectReference Include="..\..\Docentes\Sgpla.Modules.Docentes\Sgpla.Modules.Docentes.csproj" />
+    <ProjectReference Include="..\..\Catalogos\Sgpla.Modules.Catalogos\Sgpla.Modules.Catalogos.csproj" />
+    <ProjectReference Include="..\..\Institucional\Sgpla.Modules.Institucional\Sgpla.Modules.Institucional.csproj" />
+  </ItemGroup>
+
+</Project>
