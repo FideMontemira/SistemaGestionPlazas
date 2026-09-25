@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Baseline\baseline.sql" />
+    <EmbeddedResource Include="Baseline\seed.sql" />
     <EmbeddedResource Include="Scripts\**\*.sql" />
   </ItemGroup>
 

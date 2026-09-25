@@ -9,7 +9,7 @@ El diseño completo está en `../PLAN_INICIAL.md` y el modelo de datos en `../DA
 ```
 src/
   Sgpla.Api/                   host: Program.cs, OpenAPI/Scalar, /health, CORS, registro de módulos
-  Sgpla.Database/              DbUp: Scripts/####__descripcion.sql (recursos embebidos) + CLI
+  Sgpla.Database/              DbUp: Baseline/{baseline,seed}.sql + Scripts/####__descripcion.sql (recursos embebidos) + CLI
   BuildingBlocks/
     Sgpla.SharedKernel/        tipos compartidos del dominio (vacío por ahora)
     Sgpla.BuildingBlocks.Infrastructure/  SgplaDbContext único y registro de persistencia
@@ -86,7 +86,19 @@ Las pruebas usan Microsoft.Testing.Platform, habilitado en `global.json`.
 
 ## Migraciones
 
-- Cada cambio de esquema es un script nuevo en `src/Sgpla.Database/Scripts/` con el nombre `####__descripcion.sql`.
-- Los scripts ya aplicados no se modifican.
-- DbUp registra lo ejecutado en `dbo.schema_versions`.
+La base se construye en dos pasos, ambos registrados por DbUp en `dbo.schema_versions`:
+
+1. **Baseline** (`src/Sgpla.Database/Baseline/`): `baseline.sql` crea los esquemas y todas las tablas de `DATABASE.md`, y `seed.sql` carga los datos iniciales de los catálogos. Ambos se ejecutan en una sola transacción, solo sobre una base vacía, y quedan registrados como `baseline` y `baseline-seed`. Si la base ya tiene tablas pero no esos registros, la migración falla sin tocarla.
+2. **Migraciones** (`src/Sgpla.Database/Scripts/####__descripcion.sql`): cada cambio posterior, incluidos los datos de catálogos, es un script nuevo que empieza en `0001`. Se aplican en orden de nombre.
+
+Reglas:
+- Un cambio de esquema siempre es una migración nueva. No se editan `baseline.sql` ni `seed.sql`: las bases existentes ya no los vuelven a leer.
+- Las migraciones ya aplicadas no se modifican.
 - La API no migra al arrancar.
+
+**Compactar migraciones.** Cuando se acumulen muchas, se pueden fusionar en el baseline:
+1. Confirmar que **todas** las bases desplegadas ya aplicaron las migraciones que se van a fusionar.
+2. Regenerar `baseline.sql` y `seed.sql` para que incluyan su efecto.
+3. Borrar esas migraciones de `Scripts/`.
+
+Las bases existentes no notan el cambio (ya tienen `baseline` y esas migraciones registradas) y las nuevas obtienen lo mismo desde el baseline.
