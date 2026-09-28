@@ -11,4 +11,10 @@ public static class DatosUnicos
 
     /// <summary>Un número de artículo ya normalizado: 16 caracteres hexadecimales en mayúsculas.</summary>
     public static string Numero() => Guid.NewGuid().ToString("N")[..16].ToUpperInvariant();
+
+    /// <summary>Una clave entera positiva aleatoria.</summary>
+    public static int ClaveEntera() => Random.Shared.Next(1, int.MaxValue);
+
+    /// <summary>Una clave alfanumérica ya normalizada: los primeros 20 caracteres de un GUID, en mayúsculas.</summary>
+    public static string ClaveAlfanumerica() => Guid.NewGuid().ToString("N")[..20].ToUpperInvariant();
 }
