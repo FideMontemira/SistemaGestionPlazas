@@ -27,3 +27,4 @@ Cada aplicación tiene su propio workflow en `.github/workflows/`, filtrado por 
 
 - `backend-ci.yml` se ejecuta con cambios en `sgpla-backend/**`.
 - `frontend-ci.yml` se agregará junto con el esqueleto de `sgpla-web/`.
+Hola
