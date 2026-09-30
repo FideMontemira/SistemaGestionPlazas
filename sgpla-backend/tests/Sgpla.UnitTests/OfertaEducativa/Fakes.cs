@@ -3,9 +3,12 @@ using Sgpla.Modules.Catalogos.Application.Contracts;
 using Sgpla.Modules.Institucional.Application.Contracts;
 using Sgpla.Modules.OfertaEducativa.Application.Ambito;
 using Sgpla.Modules.OfertaEducativa.Application.Contracts;
+using Sgpla.Modules.OfertaEducativa.Application.ExperienciasEducativas;
 using Sgpla.Modules.OfertaEducativa.Application.PeriodosEscolares;
+using Sgpla.Modules.OfertaEducativa.Application.PlanesEstudio;
 using Sgpla.Modules.OfertaEducativa.Application.ProgramasEducativos;
 using Sgpla.Modules.OfertaEducativa.Domain.PeriodosEscolares;
+using Sgpla.Modules.OfertaEducativa.Domain.PlanesEstudio;
 using Sgpla.Modules.OfertaEducativa.Domain.ProgramasEducativos;
 using Sgpla.SharedKernel;
 
@@ -114,6 +117,9 @@ internal sealed class ClasificacionesAcademicasFalso : IClasificacionesAcademica
 
     public HashSet<int> Areas { get; } = [];
 
+    /// <summary>Cuántas veces se consultaron las áreas de formación.</summary>
+    public int ConsultasDeAreas { get; private set; }
+
     public Task<IReadOnlyDictionary<int, SistemaEducativoResumen>> ObtenerSistemasEducativosAsync(
         IReadOnlyCollection<int> ids, CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyDictionary<int, SistemaEducativoResumen>>(ids
@@ -129,11 +135,14 @@ internal sealed class ClasificacionesAcademicasFalso : IClasificacionesAcademica
             .ToDictionary(id => id, id => new NivelFormacionResumen(id, $"N{id}", $"Nivel {id}")));
 
     public Task<IReadOnlyDictionary<int, AreaFormacionResumen>> ObtenerAreasFormacionAsync(
-        IReadOnlyCollection<int> ids, CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyDictionary<int, AreaFormacionResumen>>(ids
+        IReadOnlyCollection<int> ids, CancellationToken cancellationToken)
+    {
+        ConsultasDeAreas++;
+        return Task.FromResult<IReadOnlyDictionary<int, AreaFormacionResumen>>(ids
             .Where(Areas.Contains)
             .Distinct()
             .ToDictionary(id => id, id => new AreaFormacionResumen(id, $"A{id}", $"Área {id}")));
+    }
 }
 
 /// <summary>
@@ -178,4 +187,97 @@ internal sealed class ProgramaEducativoRepositoryFalso : IProgramaEducativoRepos
         Task.FromResult(TienePlanesActivos);
 
     public void Agregar(ProgramaEducativo programaEducativo) => Agregados.Add(programaEducativo);
+}
+
+/// <summary>
+/// Repositorio en memoria de planes de estudio. Las entidades no tienen id asignado (no pasan por la base), así que
+/// <see cref="EntidadDelPlan"/> es la entidad de todos los planes registrados; la unicidad del código se simula con los
+/// pares programa-código registrados.
+/// </summary>
+internal sealed class PlanEstudiosRepositoryFalso : IPlanEstudiosRepository
+{
+    private readonly Dictionary<int, PlanEstudios> _porId = [];
+
+    public List<PlanEstudios> Agregados { get; } = [];
+
+    /// <summary>Programa activo → entidad académica. Un programa ausente no existe o está dado de baja.</summary>
+    public Dictionary<int, int> EntidadesDeProgramasActivos { get; } = [];
+
+    public HashSet<(int ProgramaEducativoId, string Codigo)> CodigosExistentes { get; } = [];
+
+    public int EntidadDelPlan { get; set; }
+
+    public bool TieneExperienciasConProgramacionesActivas { get; set; }
+
+    public void Registrar(int id, PlanEstudios plan) => _porId[id] = plan;
+
+    public Task<PlanEstudios?> ObtenerPorIdAsync(int id, CancellationToken cancellationToken) =>
+        Task.FromResult(_porId.GetValueOrDefault(id));
+
+    public Task<PlanEstudios?> ObtenerConExperienciasAsync(int id, CancellationToken cancellationToken) =>
+        ObtenerPorIdAsync(id, cancellationToken);
+
+    public Task<bool> ExisteCodigoAsync(int programaEducativoId, string codigo, CancellationToken cancellationToken) =>
+        Task.FromResult(CodigosExistentes.Contains((programaEducativoId, codigo)));
+
+    public Task<int?> ObtenerEntidadDeProgramaActivoAsync(int programaEducativoId, CancellationToken cancellationToken) =>
+        Task.FromResult<int?>(EntidadesDeProgramasActivos.TryGetValue(programaEducativoId, out var entidadId) ? entidadId : null);
+
+    public Task<int> ObtenerEntidadDelPlanAsync(int planEstudiosId, CancellationToken cancellationToken) =>
+        Task.FromResult(EntidadDelPlan);
+
+    public Task<bool> TieneExperienciasConProgramacionesActivasAsync(int planEstudiosId, CancellationToken cancellationToken) =>
+        Task.FromResult(TieneExperienciasConProgramacionesActivas);
+
+    public void Agregar(PlanEstudios planEstudios) => Agregados.Add(planEstudios);
+}
+
+/// <summary>Responde según <paramref name="tieneReferencias"/> y guarda los ids de las EE que recibe.</summary>
+internal sealed class ReferenciasExperienciaEducativaFalsas(bool tieneReferencias) : IReferenciasExperienciaEducativa
+{
+    public List<IReadOnlyCollection<int>> Consultas { get; } = [];
+
+    public Task<bool> TieneReferenciasAsync(
+        IReadOnlyCollection<int> experienciaEducativaIds,
+        CancellationToken cancellationToken)
+    {
+        Consultas.Add(experienciaEducativaIds);
+        return Task.FromResult(tieneReferencias);
+    }
+}
+
+/// <summary>
+/// Repositorio en memoria de experiencias educativas. Las entidades no tienen id asignado, así que
+/// <see cref="EntidadDeLaExperiencia"/> es la entidad de todas las registradas; la unicidad de materia y curso se simula
+/// con los pares registrados, comparados de forma ordinal.
+/// </summary>
+internal sealed class ExperienciaEducativaRepositoryFalso : IExperienciaEducativaRepository
+{
+    private readonly Dictionary<int, ExperienciaEducativa> _porId = [];
+
+    public HashSet<(string Materia, string Curso)> MateriasYCursosExistentes { get; } = [];
+
+    public int EntidadDeLaExperiencia { get; set; }
+
+    public bool TuvoProgramaciones { get; set; }
+
+    public bool TieneProgramacionesActivas { get; set; }
+
+    public void Registrar(int id, ExperienciaEducativa experiencia) => _porId[id] = experiencia;
+
+    public Task<ExperienciaEducativa?> ObtenerPorIdAsync(int id, CancellationToken cancellationToken) =>
+        Task.FromResult(_porId.GetValueOrDefault(id));
+
+    public Task<bool> ExisteMateriaCursoAsync(
+        int planEstudiosId, string materia, string curso, CancellationToken cancellationToken) =>
+        Task.FromResult(MateriasYCursosExistentes.Contains((materia, curso)));
+
+    public Task<bool> TuvoProgramacionesAsync(int experienciaEducativaId, CancellationToken cancellationToken) =>
+        Task.FromResult(TuvoProgramaciones);
+
+    public Task<bool> TieneProgramacionesActivasAsync(int experienciaEducativaId, CancellationToken cancellationToken) =>
+        Task.FromResult(TieneProgramacionesActivas);
+
+    public Task<int> ObtenerEntidadAsync(int experienciaEducativaId, CancellationToken cancellationToken) =>
+        Task.FromResult(EntidadDeLaExperiencia);
 }
